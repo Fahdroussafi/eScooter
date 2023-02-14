@@ -18,8 +18,6 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", require("./authentication-service/auth.route"));
-app.use("/api/admin", require("./admin-service/admin.route"));
-app.use("/api/users", require("./users-service/user.route"));
 app.use("/api/scouter", require("./scooter-service/scouter.route"));
 
 // 404
