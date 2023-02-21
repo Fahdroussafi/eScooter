@@ -7,35 +7,39 @@ const bcrypt = require("bcryptjs");
 // @route   POST /user/register
 // @access  Public
 const Register = asyncHandler(async (req, res) => {
-  const { nom, prenom, email, password, role } = req.body;
-  if (nom === "" || prenom === "" || email === "" || password === "") {
+  const { name, email, password } = req.body;
+
+  if (!name || !email || !password) {
     res.status(400);
-    throw new Error("Veuillez remplir tous les champs");
+    throw new Error("Please add all fields");
   }
+
   //check if user exists
   const userExists = await User.findOne({ email });
   if (userExists) {
     res.status(400);
-    throw new Error("Cet utilisateur existe deja");
+    throw new Error("User already exists");
   }
-  //hash password
+
+  //Hash password
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
-  //create user
+
+  //Create User
   const user = await User.create({
-    nom,
-    prenom,
+    name,
     email,
     password: hashedPassword,
   });
+
   if (user) {
     res.status(201).json({
-      _id: user._id,
-      nom: user.nom,
-      prenom: user.prenom,
+      _id: user.id,
+      name: user.name,
       email: user.email,
-      role: user.role,
       token: generateToken(user._id),
+      message: "Your account has been created successfully",
+      status: "SUCCESS",
     });
   } else {
     res.status(400);
